@@ -1,10 +1,35 @@
 body {
   padding-top: 50px;
+  padding-bottom: 50px;
 }
 
-a:hover,
-a:focus,
-input:focus,
-button:focus {
-  outline: 5px dashed red;
+form {
+  margin-bottom: 20 px;
+}
+
+h2 {
+  /* display: inline; */
+}
+
+.thumbnail {
+  height: 150px;
+}
+
+.result-container {
+  margin-top: 10px;
+  margin-bottom: 20px;   
+  height: 150px;
+  overflow: hidden;
+}
+
+p {
+  font-size: 1em;
+}
+
+.title-block {
+}
+
+.img-block {
+  float: left;
+  margin-right: 5px;
 }

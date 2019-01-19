@@ -1,64 +1,65 @@
-'use strict';
-
-const BEER_MAPPING_URL = 'http://beermapping.com/webservice/';
-const API_KEY = 'b79009d86aaf5ff13096058e40ac0780';
-
-function watchSubmit() {
-  $('.city-state-query').submit(function( event ) {
-    event.preventDefault();
-     var city = document.getElementById('city-state').elements[0];
-     var state = document.getElementById('city-state').elements[1];
-    // let queryTarget = $(event.currentTarget).find('.js-query');
-    // let query = queryTarget.val();
-    // queryTarget.val("");
-    // getDataFromApi(query, displayYoutubeSearchResults);
-    // console.log($(this).serializeArray());
-    console.log(city.value + ',' + state.value);
-    city.value = "";
-    state.value = "";
-  });
-}
+const YOUTUBE_SEARCH_URL = 'https://www.googleapis.com/youtube/v3/search';
 
 function getDataFromApi(searchTerm, callback) {
   const settings = {
     url: YOUTUBE_SEARCH_URL,
     data: {
+      q: `${searchTerm}`,
+      maxResults: 5,
       part: 'snippet',
-      key: API_KEY,
-      q: searchTerm,
-      maxResults: '10',
+      key: 'AIzaSyBXZuDnAq_e5cb-hLwVHmCYsMfAqIcLFOU',
+      type: 'video'
     },
     dataType: 'json',
-    method: 'GET',  //method = type.  method is newer, type is older.
-    success: callback //can accept an array of functions, with each function being called in turn
+    type: 'GET',
+    success: callback
   };
-$.ajax(settings)
-  .fail(showErr);
+
+  $.ajax(settings);
 }
 
-function displayYoutubeSearchResults(data) {
- const searchResults = data.items.map((item, index) => displayResult(item));
- $('#results').html(`<p>Number of results: ${resultsNum}</p>`)
- $('.js-search-results').html(searchResults);
+function renderResult(result) {
+  // console.log(${result.videoId});
+  return `
+    <div class="result-container">
+      <div class="img-block result">
+        <img src="${result.snippet.thumbnails.medium.url}" class="thumbnail">
+      </div>
+      <div class="title-block result">
+        <h2>
+        <a class="js-result-name" href="https://www.youtube.com/watch?v=${result.id.videoId}" target="_blank">${result.snippet.title}</a> 
+        <p>${result.snippet.description}</p>
+        </h2>
+      </div>
+    </div>
+  `;
 }
 
-function displayResult(result) {
-  resultsNum++;
-  return `<div>
-	  <h2>
-		<a class="js-result-name" href="https://www.youtube.com/watch?v=${result.id.videoId}" target="_blank">${result.snippet.title}</a> 
-		</h2>
-	  <a href="https://www.youtube.com/watch?v=${result.id.videoId}" target="_blank" role="presentation"><img src="${result.snippet.thumbnails.medium.url}" alt="video-thumbnail"></a>
-	</div>`;
+function displayYouTubeSearchData(data) {
+  const results = data.items.map((item, index) => renderResult(item));
+  $('.js-search-results').html(results);
+  $('.js-search-results').append(`<button class="next-Page">Next Page</button>`);
+  loadNextPage(data);
+  console.log(data);
 }
 
-function showErr() {
-  return `<p>No YouTube results for that search!</p>`;
+function loadNextPage(currentData) {
+  $('.js-search-results').on('click', '.next-Page', function (event) {
+     const results = currentData.items.map((item, index) => renderResult(item));
+     ('.js-search-results').html(results);
+  });
+}
+
+function watchSubmit() {
+  $('.js-search-form').submit(event => {
+    event.preventDefault();
+    const queryTarget = $(this).find('.js-query');
+    const query = queryTarget.val();
+    // clear out the input
+    queryTarget.val("");
+    getDataFromApi(query, displayYouTubeSearchData);
+  });
 }
 
 $(watchSubmit);
 
-//define the Endpoint and any API Keys needed
-//create a means to retrieve input from the user 
-//use AJAX or JSON method to utilize the user input 
-//create a means to display AJAX/JSON data retrieved from API
