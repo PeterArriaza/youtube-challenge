@@ -1,0 +1,10 @@
+body {
+  padding-top: 50px;
+}
+
+a:hover,
+a:focus,
+input:focus,
+button:focus {
+  outline: 5px dashed red;
+}
